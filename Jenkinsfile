@@ -1,45 +1,33 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Build Backend') {
-            steps {
-                echo '🔧 Building backend...'
-                bat 'type backend\\server.js'
-            }
-        }
+    tools {
+        maven 'Maven 3.8.6'   // Use exact name as in Jenkins
+        jdk 'JDK 21'          // Use exact name as in Jenkins
+    }
 
-        stage('Build Frontend') {
+    stages {
+    
+
+        stage('Build') {
             steps {
-                echo '🎨 Building frontend...'
-                bat 'type frontend\\index.html'
+                bat 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                echo '✅ Running tests...'
-                bat 'echo All dummy tests passed.'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploying application (simulated)...'
-                bat 'echo Deployment completed.'
+                bat 'mvn test'
             }
         }
     }
 
     post {
-        always {
-            echo '📝 Pipeline finished.'
+        failure {
+            echo 'Build or tests failed.'
         }
         success {
-            echo '🎉 Build was successful!'
-        }
-        failure {
-            echo '❌ Build failed.'
+            echo 'Build and tests succeeded.'
         }
     }
 }
